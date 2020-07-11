@@ -1,12 +1,18 @@
-import argparse
 import math
+import argparse
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--type")
 parser.add_argument("--principal",type=float)
 parser.add_argument("--payment",type=float)
 parser.add_argument("--periods",type=int)
 parser.add_argument("--interest",type=float)
+
 args = parser.parse_args()
+
+def msg():
+    print("Incorrect parameters.")
+
 if args.type=="diff" and args.principal and args.periods and args.interest:
     p = args.principal
     n = args.periods
@@ -25,7 +31,8 @@ if args.type=="diff" and args.principal and args.periods and args.interest:
         print("")
         print("Overpayment = ", int(sum - p))
     else:
-        print("Incorrect parameters.")
+        msg()
+
 elif args.type=="annuity":
     if(args.principal and args.payment and args.interest):
         cp = args.principal
@@ -64,6 +71,7 @@ elif args.type=="annuity":
         print("Your credit principal = {}!".format(int(cp)))
         print("Overpayment = ", int((n * mp) - int(cp)))
     else:
-        print("Incorrect parameters.")
+        msg()
+
 else:
-    print("Incorrect parameters.")
+    msg()
