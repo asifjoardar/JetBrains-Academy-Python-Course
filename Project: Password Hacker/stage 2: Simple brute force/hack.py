@@ -13,10 +13,7 @@ with socket.socket() as client_socket:
     for i in range(1,37):
         ok = True
         for j in itertools.product(chr, repeat = i):
-            data = j
-            s = str()
-            for l in data:
-                s = s + str(l)
+            s = ''.join(j)
             s1 = s
             data = s.encode()
             client_socket.send(data)
