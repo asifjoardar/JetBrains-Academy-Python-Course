@@ -1,101 +1,66 @@
-def show(s):
-    c = 0
-    print("---------")
-    for i in range(2, -1, -1):
-        print('| ', end='')
-        for j in range(3):
-            print('{} '.format(ls[j][i]), end='')
-            if(ls[j][i] != ' '):
-                c += 1
-        print('|')
-    print("---------")
-    x1, z1 = 0, 0
-    if (s[0][0] == s[0][1] and s[0][1] == s[0][2]):
-        if (s[0][0] == 'X'):
-            x1 += 1
-        elif(s[0][0] == 'O'):
-            z1 += 1
-    if (s[1][0] == s[1][1] and s[1][1] == s[1][2]):
-        if (s[1][0] == 'X'):
-            x1 += 1
-        elif(s[1][0] == 'O'):
-            z1 += 1
-    if (s[2][0] == s[2][1] and s[2][1] == s[2][2]):
-        if (s[2][0] == 'X'):
-            x1 += 1
-        elif(s[2][0] == 'O'):
-            z1 += 1
-    if (s[0][0] == s[1][0] and s[1][0] == s[2][0]):
-        if (s[0][0] == 'X'):
-            x1 += 1
-        elif(s[0][0] == 'O'):
-            z1 += 1
-    if (s[0][1] == s[1][1] and s[1][1] == s[2][1]):
-        if (s[0][1] == 'X'):
-            x1 += 1
-        elif(s[0][1] == 'O'):
-            z1 += 1
-    if (s[0][2] == s[1][2] and s[1][2] == s[2][2]):
-        if (s[0][2] == 'X'):
-            x1 += 1
-        elif(s[0][2] == 'O'):
-            z1 += 1
-    if (s[0][0] == s[1][1] and s[1][1] == s[2][2]):
-        if (s[0][0] == 'X'):
-            x1 += 1
-        elif(s[0][0] == 'O'):
-            z1 += 1
-    if (s[0][2] == s[1][1] and s[1][1] == s[2][0]):
-        if (s[0][2] == 'X'):
-            x1 += 1
-        elif(s[0][2] == 'O'):
-            z1 += 1
-    if (x1):
-        print('X wins')
-        return True
-    elif (z1):
-        print('O wins')
-        return True
-    elif (c == 9):
-        print('Draw')
-        return True
-    return False
+WINNING_COMBINATIONS = [
+    ['0,0', '0,1', '0,2'],  # horizontal layer 1
+    ['1,0', '1,1', '1,2'],  # horizontal layer 2
+    ['2,0', '2,1', '2,2'],  # horizontal layer 3
+    ['0,0', '1,0', '2,0'],  # vertical layer 1
+    ['0,1', '1,1', '2,1'],  # vertical layer 2
+    ['0,2', '1,2', '2,2'],  # vertical layer 3
+    ['0,0', '1,1', '2,2'],  # diagonal layer 1
+    ['0,2', '1,1', '2,0'],  # diagonal layer 2
+]
+
+my_board = [
+    [' ', ' ', ' '],
+    [' ', ' ', ' '],
+    [' ', ' ', ' ']
+]
 
 
-# START
-j = 2
+def print_board(board):
+    print('-' * 9)
+    for _ in board[::-1]:
+        print(f'| {_[0]} {_[1]} {_[2]} |')
+    print('-' * 9)
 
-ls = []
-ls.append([])
-ls.append([])
-ls.append([])
 
-for i in range(8, -1, -1):
-    ls[j].append(' ')
-    j -= 1
-    if (i % 3 == 0):
-        j = 2
+def game_status(board, player):
+    for _ in WINNING_COMBINATIONS:
+        if all(
+                r is True
+                for r in [
+                    board[int(c.split(',')[0])][int(c.split(',')[1])] == player
+                    for c in _
+                ]
+        ):
+            return True
 
-show(ls)
-cnt = 0
+# Start
+print_board(my_board)
+marker = 'X'
+status = True
 
-while True:
-    s1 = str(input('Enter the coordinates: > '))
-    if (not s1[0].isalpha()):
-        if (int(s1[0]) > 3 or int(s1[2]) > 3):
-            print('Coordinates should be from 1 to 3!')
-        else:
-            p = int(s1[0]) - 1
-            q = int(s1[2]) - 1
-            if (ls[p][q] == ' '):
-                if cnt % 2:
-                    ls[p][q] = 'O'
-                else:
-                    ls[p][q] = 'X'
-                if(show(ls)):
-                    break
-                cnt += 1
-            else:
-                print('This cell is occupied! Choose another one!')
-    else:
+while status:
+    coord = input('Enter the coordinates: ').split()
+    if any([c.isdigit() is False for c in coord]):
         print('You should enter numbers!')
+        continue
+    if any(1 > int(c) or int(c) > 3 for c in coord):
+        print('Coordinates should be from 1 to 3!')
+        continue
+    if my_board[int(coord[0]) - 1][int(coord[1]) - 1] != ' ':
+        print('This cell is occupied! Choose another one!')
+        continue
+
+    my_board[int(coord[0]) - 1][int(coord[1]) - 1] = marker
+    print_board(my_board)
+
+    if game_status(board=my_board, player=marker) is True:
+        print(f'{marker} wins!')
+        status = False
+        continue
+
+    if all([x != ' ' for spots in my_board for x in spots]):
+        print('Draw!')
+        status = False
+
+    marker = 'O' if marker == 'X' else 'X'
